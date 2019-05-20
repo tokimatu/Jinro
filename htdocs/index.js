@@ -24,8 +24,12 @@ window.onload=() => {
             let message = document.getElementById("textbox1").value;
             let sele = document.getElementById("fontSize").getElementsByTagName('option');
             document.getElementById("textbox1").value = "";
-            socket.emit("stext1", {message : message, name : name, yaku : yaku, myColor : myColor, fontSize : fontSize});
-            sele[0].selected = true;
+            if (message === "") {
+                /* messageが空白だったら何もしない */
+            } else {
+                socket.emit("stext1", {message : message, name : name, yaku : yaku, myColor : myColor, fontSize : fontSize});
+                sele[0].selected = true;    
+            }
             //let table = document.getElementById("table");
             //let row, cell;
             //let abilityText = nameList[nameList.length - 1] + " さんが入村しました。";
@@ -96,24 +100,30 @@ socket.on("ctext1", (data) => {
     let message3 = "";
     let mflg = data.flg;
     let table = document.getElementById("table" + day);
-    let row = table.insertRow(0);
-    row.style.width = "830px";
-    let cell1 = row.insertCell(-1);
-    let cell2 = row.insertCell(-1);
+    let row1 = table.insertRow(0);
+    let row2 = table.insertRow(0);
+    row1.style.width = "550px";
+    row2.style.width = "550px";
+    let cell1 = row1.insertCell(-1);
+    let cell3 = row2.insertCell(-1);
+    let cell2 = row2.insertCell(-1);
     let fontSize1 = data.fontSize;
 
     //message += data.date + " > [" + nameW + '] ' + data.value + "\n";
-    message1 += "[" + nameW + '] ';
+    message1 += nameW;
     //message2 += `<font size="${fontSize1}">${data.value}\n</font>`;
     message2 += `<font size="${fontSize1}"></font>`;
     message3 += data.value;
-    cell1.style.borderBottomStyle = "solid";
-    cell1.style.borderBottomColor = "rgba(255, 255, 255, 0.5)";
-    cell2.style.borderBottomStyle = "solid";
-    cell2.style.borderBottomColor = "rgba(255, 255, 255, 0.5)";
+    //cell1.style.borderBottomStyle = "solid";
+    //cell1.style.borderBottomColor = "rgba(255, 255, 255, 0.5)";
+    //cell2.style.borderBottomStyle = "solid";
+    //cell2.style.borderBottomColor = "rgba(255, 255, 255, 0.5)";
     cell1.className = nameW;
-    cell1.style.width = "130px";
-    cell2.style.width = "700px";
+    cell1.style.width = "50px";
+    cell1.style.height = "10px";
+    cell1.style.fontSize = "15px";
+    cell1.style.whiteSpace = "nowrap";
+    cell2.style.width = "500px";
     cell1.style.color = colorSet;
         cell1.onmouseover = () => {
             let cell1_cname = cell1.className;
@@ -126,6 +136,7 @@ socket.on("ctext1", (data) => {
     cell1.innerText = "" + message1;
     cell2.innerHTML += message2;
     cell2.childNodes[0].innerText = "" + message3;
+    cell3.style.backgroundImage = 'url(htdocs/magic.png)';
 });
 
 socket.on("ctext2", (data) => {
@@ -139,10 +150,10 @@ socket.on("ctext2", (data) => {
         row.style.width = "930px";
         let cell1 = row.insertCell(-1);
         let cell2 = row.insertCell(-1);
-        cell1.style.borderBottomStyle = "solid";
-        cell1.style.borderBottomColor = "rgba(255, 255, 255, 0.5)";
-        cell2.style.borderBottomStyle = "solid";
-        cell2.style.borderBottomColor = "rgba(255, 255, 255, 0.5)";
+        //cell1.style.borderBottomStyle = "solid";
+        //cell1.style.borderBottomColor = "rgba(255, 255, 255, 0.5)";
+        //cell2.style.borderBottomStyle = "solid";
+        //cell2.style.borderBottomColor = "rgba(255, 255, 255, 0.5)";
         cell2.className = nameW;
         cell1.style.width = "130px";
         cell2.style.width = "800px";

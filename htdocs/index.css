@@ -197,3 +197,40 @@ body{
     border-radius: 5px;
 
 }
+
+.table{
+    border-collapse:separate;
+    border-spacing: 5px;
+    width: 100%;
+}
+
+.table tr *:nth-child(1){
+    background-position: center;
+    background-repeat: no-repeat;
+    width: 50px;
+    height: 50px;
+}
+
+.table tr *:nth-child(2){
+    display: inline-block;
+    position: relative; 
+    margin: 5px 0 0 20px;
+    padding: 17px 13px;
+    border-radius: 12px;
+    background: #0d63b4;
+}
+
+.table tr *:nth-child(2):after{
+    content: "";
+    display: inline-block;
+    position: absolute;
+    top: 18px; 
+    left: -24px;
+    border: 12px solid transparent;
+    border-right: 12px solid #0d63b4;
+}
+  
+.table tr *:nth-child(2) p {
+    margin: 0;
+    padding: 0;
+}

@@ -207,30 +207,75 @@ body{
 .table tr *:nth-child(1){
     background-position: center;
     background-repeat: no-repeat;
+    border-radius: 30%;
     width: 50px;
     height: 50px;
 }
 
-.table tr *:nth-child(2){
+.myMainS{
     display: inline-block;
     position: relative; 
-    margin: 5px 0 0 20px;
-    padding: 17px 13px;
+    margin: 5px 20px 0 0 ;
+    padding: 12px 10px;
     border-radius: 12px;
-    background: #0d63b4;
+    max-width: 400px;
+    background: #b2ccf5;
+    overflow-wrap: break-word;
 }
-
-.table tr *:nth-child(2):after{
+.myMainS:before{
     content: "";
     display: inline-block;
     position: absolute;
-    top: 18px; 
+    top: 12px; 
+    right: -24px;
+    border: 12px solid transparent;
+    border-left: 12px solid#b2ccf5;
+}
+
+.otherMainS{
+    display: inline-block;
+    position: relative; 
+    margin: 5px 0 0 20px;
+    padding: 12px 10px;
+    border-radius: 12px;
+    max-width: 400px;
+    background: #f5f0b2;
+    overflow-wrap: break-word;
+}
+.otherMainS:before{
+    content: "";
+    display: inline-block;
+    position: absolute;
+    top: 12px; 
     left: -24px;
     border: 12px solid transparent;
-    border-right: 12px solid #0d63b4;
+    border-right: 12px solid #f5f0b2;
 }
-  
-.table tr *:nth-child(2) p {
+.otherMainS p {
+    margin: 0;
+    padding: 0;
+}
+
+.GMMainS{
+    display: inline-block;
+    position: relative; 
+    margin: 5px 0 0 20px;
+    padding: 12px 10px;
+    border-radius: 12px;
+    max-width: 400px;
+    background: #baf5b2;
+    overflow-wrap: break-word;
+}
+.GMMainS:before{
+    content: "";
+    display: inline-block;
+    position: absolute;
+    top: 12px; 
+    left: -24px;
+    border: 12px solid transparent;
+    border-right: 12px solid #baf5b2;
+}
+.GMMainS p {
     margin: 0;
     padding: 0;
 }

@@ -102,41 +102,40 @@ socket.on("ctext1", (data) => {
     let table = document.getElementById("table" + day);
     let row1 = table.insertRow(0);
     let row2 = table.insertRow(0);
-    row1.style.width = "550px";
-    row2.style.width = "550px";
     let cell1 = row1.insertCell(-1);
     let cell3 = row2.insertCell(-1);
     let cell2 = row2.insertCell(-1);
     let fontSize1 = data.fontSize;
 
-    //message += data.date + " > [" + nameW + '] ' + data.value + "\n";
     message1 += nameW;
-    //message2 += `<font size="${fontSize1}">${data.value}\n</font>`;
     message2 += `<font size="${fontSize1}"></font>`;
     message3 += data.value;
-    //cell1.style.borderBottomStyle = "solid";
-    //cell1.style.borderBottomColor = "rgba(255, 255, 255, 0.5)";
-    //cell2.style.borderBottomStyle = "solid";
-    //cell2.style.borderBottomColor = "rgba(255, 255, 255, 0.5)";
     cell1.className = nameW;
     cell1.style.width = "50px";
     cell1.style.height = "10px";
     cell1.style.fontSize = "15px";
     cell1.style.whiteSpace = "nowrap";
-    cell2.style.width = "500px";
     cell1.style.color = colorSet;
-        cell1.onmouseover = () => {
-            let cell1_cname = cell1.className;
-            socket.emit("mouseover", {value : cell1_cname})
-            console.log(`${cell1_cname}`);
-        }
-        cell1.onmouseout = () => {
-            document.getElementById("poptext1").style.display = "none";
-        }
-    cell1.innerText = "" + message1;
+    cell1.onmouseover = () => {
+        let cell1_cname = cell1.className;
+        socket.emit("mouseover", {value : cell1_cname})
+        console.log(`${cell1_cname}`);
+    }
+    cell1.onmouseout = () => {
+        document.getElementById("poptext1").style.display = "none";
+    }
     cell2.innerHTML += message2;
     cell2.childNodes[0].innerText = "" + message3;
-    cell3.style.backgroundImage = 'url(htdocs/magic.png)';
+
+    if (name === nameW) {
+        cell2.className = "myMainS";
+        let width = 400 - parseInt(cell2.getBoundingClientRect().width) + 20;
+        cell2.style.left = "" + width + "px";
+    } else {
+        cell2.className = "otherMainS";
+        cell1.innerText = "" + message1;
+        cell3.style.backgroundImage = 'url(htdocs/magic.png)';
+    }
 });
 
 socket.on("ctext2", (data) => {
@@ -473,25 +472,12 @@ socket.on("voteRR", (data) => {
     let voteText = "";
     let table = document.getElementById("sidebar");
     voteText += "" + name + " は " + select + " に投票しました。";
-    chatWL("", null, voteText, "red");
+    chatWL("GM", null, voteText, "red");
     for (i = 0; i < table.rows.length; i++) {
         if (table.rows[i].cells[0].innerHTML === name) {
             table.rows[i].cells[3].innerHTML = select;
         }
     }
-    /* let table = document.getElementById("table" + day);
-    let row = table.insertRow(0);
-    row.style.width = "930px";
-    let cell1 = row.insertCell(-1);
-    let cell2 = row.insertCell(-1);
-    cell1.style.borderBottomStyle = "solid";
-    cell1.style.borderBottomColor = "rgba(255, 255, 255, 0.5)";
-    cell2.style.borderBottomStyle = "solid";
-    cell2.style.borderBottomColor = "rgba(255, 255, 255, 0.5)";
-    cell1.style.width = "130px";
-    cell2.style.width = "800px";
-    cell2.innerText = voteText; */
-    //
     let label = document.getElementById("voteLabel" + day);
     let voteText2 = "";
     label.style.display = "inline-block";
@@ -679,19 +665,7 @@ socket.on("hanging2", (data) => {
         let row, cell,cell2;
         let message = "";
         message += hang + " は村人達の手によって処刑されました。";
-        chatWL("", null, message, "red");
-       /*  row = table3.insertRow(0);
-        row.style.width = "930px";
-        cell = row.insertCell(-1);
-        cell2 = row.insertCell(-1);
-        cell.style.borderBottomStyle = "solid";
-        cell2.style.borderBottomStyle = "solid";
-        cell.style.borderBottomColor = "rgba(255, 255, 255, 0.5)";
-        cell2.style.borderBottomColor = "rgba(255, 255, 255, 0.5)";
-        cell.style.width = "130px";
-        cell2.style.width = "130px";
-        cell2.style.color = "red";
-        cell2.innerHTML = "" + message; */
+        chatWL("GM", null, message, "red");
     } else {
         let table = document.getElementById("ability2");
         let row, cell1;
@@ -701,21 +675,7 @@ socket.on("hanging2", (data) => {
         abilityText += hang + " は無残な姿で発見されました。";
         cell1.innerHTML = "" + abilityText;
 
-        chatWL("", null, abilityText, "red");
-       /*  let table3 = document.getElementById("table" + day);
-        let row2, cell,cell2;
-        row2 = table3.insertRow(0);
-        row2.style.width = "930px";
-        cell = row2.insertCell(-1);
-        cell2 = row2.insertCell(-1);
-        cell.style.borderBottomStyle = "solid";
-        cell2.style.borderBottomStyle = "solid";
-        cell.style.borderBottomColor = "rgba(255, 255, 255, 0.5)";
-        cell2.style.borderBottomColor = "rgba(255, 255, 255, 0.5)";
-        cell.style.width = "130px";
-        cell2.style.width = "800px";
-        cell2.style.color = "red";
-        cell2.innerHTML = "" + abilityText; */
+        chatWL("GM", null, abilityText, "red");
     }
     //console.log(voteText);
     document.getElementById("voteR" + day).innerHTML += voteText;
@@ -813,19 +773,6 @@ socket.on("chatLog", (data) => {
                 message1 += "[" + chatList[i + 1][1] + '] ' + "\n";
                 message2 += chatList[i + 1][0] + "\n";
                 chatWL(message1, null, message2, null);
-                /* row = table2.insertRow(0);
-                row.style.width = "930px";
-                cell1 = row.insertCell(-1);
-                cell2 = row.insertCell(-1);
-                cell1.style.borderBottomStyle = "solid";
-                cell1.style.borderBottomColor = "rgba(255, 255, 255, 0.5)";
-                cell2.style.borderBottomStyle = "solid";
-                cell2.style.borderBottomColor = "rgba(255, 255, 255, 0.5)";
-                cell1.style.width = "130px";
-                cell2.style.width = "800px";
-
-                cell1.innerHTML = "" + message1;
-                cell2.innerHTML = "" + message2; */
             }
         }
     }
@@ -989,19 +936,7 @@ let timerB = (dayFlg1, day1, time1) => {
             let row2, cell3, cell4;
             let abilityText = "";
             abilityText += "あと20秒で昼時間が終了します。投票先の確認をお願いします。";
-            chatWL("", null, abilityText, "red");
-            /* row2 = table2.insertRow(0);
-            row2.style.width = "930px"
-            cell3 = row2.insertCell(-1);
-            cell4 = row2.insertCell(-1);
-            cell3.style.width = "130px";
-            cell3.style.borderBottomStyle = "solid";
-            cell3.style.borderBottomColor = "rgba(255, 255, 255, 0.5)";
-            cell4.style.width = "800px";
-            cell4.style.color = "rgba(255, 0, 0, 1)";
-            cell4.innerHTML = "" + abilityText;
-            cell4.style.borderBottomStyle = "solid";
-            cell4.style.borderBottomColor = "rgba(255, 255, 255, 0.5)"; */
+            chatWL("GM", null, abilityText, "red");
         }
     }
 }
@@ -1025,18 +960,7 @@ let gameStart1 = (dayFlg1) => {
         cell1 = row1.insertCell(-1);
         abilityText += day + "日目 の 昼時間 になりました。";
         cell1.innerHTML = "" + abilityText;
-        chatWL("", null, abilityText, null);
-        /* row2 = table2.insertRow(0);
-        row2.style.width = "930px"
-        cell3 = row2.insertCell(-1);
-        cell4 = row2.insertCell(-1);
-        cell3.style.width = "130px";
-        cell3.style.borderBottomStyle = "solid";
-        cell3.style.borderBottomColor = "rgba(255, 255, 255, 0.5)";
-        cell4.style.width = "800px";
-        cell4.innerHTML = "" + abilityText;
-        cell4.style.borderBottomStyle = "solid";
-        cell4.style.borderBottomColor = "rgba(255, 255, 255, 0.5)"; */
+        chatWL("GM", null, abilityText, null);
         main2.style.backgroundImage = 'url(htdocs/hiru.jpg)';
         try {
             for (i = 0; i < vote.childElementCount; i++) {
@@ -1049,25 +973,14 @@ let gameStart1 = (dayFlg1) => {
         } catch (e) {}
     } else if (dayFlg == 3) { // 夜
         document.body.style.backgroundColor = "#414166";
-        document.body.style.color = "white";
+        document.body.style.color = "black";
 
         row1 = table1.insertRow(0);
         cell1 = row1.insertCell(-1);
         abilityText += day + "日目 の 夜時間 になりました。";
         cell1.innerHTML = "" + abilityText;
-        chatWL("", null, abilityText, null);
+        chatWL("GM", null, abilityText, null);
         main2.style.backgroundImage = 'url(htdocs/yoru.jpg)';
-        /* row2 = table2.insertRow(0);
-        row2.style.width = "930px"
-        cell3 = row2.insertCell(-1);
-        cell4 = row2.insertCell(-1);
-        cell3.style.width = "130px";
-        cell3.style.borderBottomStyle = "solid";
-        cell3.style.borderBottomColor = "rgba(255, 255, 255, 0.5)";
-        cell4.style.width = "800px";
-        cell4.innerHTML = "" + abilityText;
-        cell4.style.borderBottomStyle = "solid";
-        cell4.style.borderBottomColor = "rgba(255, 255, 255, 0.5)"; */
         if(day != 0) {
         try {
             for (i = 0; i < vote.childElementCount; i++) {
@@ -1094,25 +1007,10 @@ let gameStart1 = (dayFlg1) => {
         
         abilityText += day + "日目 の 朝時間 になりました。";
         console.log("cheak");
-        chatWL("", null, abilityText, null);
+        chatWL("GM", null, abilityText, null);
         for (i = 1; i < table4.rows.length; i++) {
             table4.rows[i].cells[3].innerHTML = "";
         }
-        
-        /* row1 = table1.insertRow(0);
-        cell1 = row1.insertCell(-1);
-        //cell1.style.backgroundColor = "white";
-        cell1.innerHTML = "" + abilityText;
-        row2 = table2.insertRow(0);
-        cell3 = row2.insertCell(-1);
-        cell4 = row2.insertCell(-1);
-        cell3.style.width = "130px";
-        cell3.style.borderBottomStyle = "solid";
-        cell3.style.borderBottomColor = "rgba(255, 255, 255, 0.5)";
-        cell4.style.width = "800px";
-        cell4.innerHTML = "" + abilityText;
-        cell4.style.borderBottomStyle = "solid";
-        cell4.style.borderBottomColor = "rgba(255, 255, 255, 0.5)"; */
         main2.style.backgroundImage = 'url(htdocs/hiru.jpg)';
         if (day != 1) {
             try {
@@ -1125,20 +1023,7 @@ let gameStart1 = (dayFlg1) => {
                         socket.emit("yaku3", {select : yaku3V, name : name, yaku : yaku});
                         let abilityText2 = "";
                         abilityText2 += `${day -1}日目の夜に${yaku3V}さんを選択しました。`;
-                        chatWL("", null, abilityText2, null);
-                        /* row2 = table2.insertRow(0);
-                        //cell1.style.backgroundColor = "white";
-                        cell3 = row2.insertCell(-1);
-                        cell4 = row2.insertCell(-1);
-                        cell3.style.width = "130px";
-                        cell3.style.borderBottomStyle = "solid";
-                        cell3.style.borderBottomColor = "rgba(255, 255, 255, 0.5)";
-                        cell4.style.width = "800px";
-                        cell4.style.color = "red";
-                        cell4.innerHTML = "" + abilityText2;
-                        cell4.style.borderBottomStyle = "solid";
-                        cell4.style.borderBottomColor = "rgba(255, 255, 255, 0.5)"; */
-
+                        chatWL("GM", null, abilityText2, null);
                         //console.log("yaku3を送信しました");
                         break;
                     }
@@ -1158,23 +1043,25 @@ let js_color = (p1) => {
 }
 
 let chatWL = (moji, color, moji2, color2) => {
-    let table3 = document.getElementById("table" + day);
-    let row2, cell,cell2;
-    row2 = table3.insertRow(0);
-    row2.style.width = "830px";
-    cell = row2.insertCell(-1);
+    let table = document.getElementById("table" + day);
+    let row1, row2, cell1, cell2, cell3;
+    row1 = table.insertRow(0);
+    row2 = table.insertRow(0);
+    cell1 = row1.insertCell(-1);
+    cell3 = row2.insertCell(-1);
     cell2 = row2.insertCell(-1);
-    cell.style.borderBottomStyle = "solid";
-    cell2.style.borderBottomStyle = "solid";
-    cell.style.borderBottomColor = "rgba(255, 255, 255, 0.5)";
-    cell2.style.borderBottomColor = "rgba(255, 255, 255, 0.5)";
-    cell.style.width = "130px";
-    cell2.style.width = "700px";
-    cell.style.color = color;
+    cell1.style.color = color;
     cell2.style.color = color2;
-    cell.innerHTML = "" + moji;
+    cell1.innerHTML = "" + moji;
     cell2.innerHTML = "" + moji2;
+ 
 
+    cell1.style.width = "50px";
+    cell1.style.height = "10px";
+    cell1.style.fontSize = "15px";
+    cell1.style.whiteSpace = "nowrap";
+    cell2.className = "GMMainS";
+    cell3.style.backgroundImage = 'url(htdocs/magic.png)';
 }
 
 

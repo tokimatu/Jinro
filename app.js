@@ -2,6 +2,7 @@
 const express = require('express');
 const app = express();
 const path = require('path');
+const bodyParser = require('body-parser');
 const fs = require('fs');
 const date = require('date-utils');
 
@@ -42,7 +43,17 @@ let gameFlg = false;
 let taroinu = [];
 let votelist = [];
 
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended:false}));
 app.use('/htdocs',express.static(path.join(__dirname, '/htdocs')));
+app.get('/index', (req, res, next) => {
+  res.sendFile(path.join(__dirname, './htdocs/sub.html'))});
+//postを受け取った場合の処理
+app.post('/taroinu', (req, res, next) => {
+  let name = req.body.name;
+  let pass = req.body.pass;
+  console.log(`${name}さんのパスは{pass}だああああ！`);
+  res.sendFile(path.join(__dirname, './htdocs/index.html'))});
 app.get('/taroinu', (req, res, next) => {
   res.sendFile(path.join(__dirname, './htdocs/index.html'))});
 

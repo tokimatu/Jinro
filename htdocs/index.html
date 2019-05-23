@@ -71,8 +71,6 @@
             <input type="radio" id="chatDay8" name="chatRadio" value="8" onclick="chatclick()" >8日目
           </label>
         </p>
-
-
         <div id="main2">
           <div id="mainB">
             <div id="main">
@@ -92,7 +90,6 @@
         <div id="subB">
           <div id="sub">
               <div id="yaku"></div>
-              <div id="vote"></div>
             <table id="sidebar"></table>
           </div>      
         </div>
@@ -139,6 +136,35 @@
             <table id="ability2"></table>
           </div>
         </div>
+
+        <button id="openModal">投票</button>
+        <!-- モーダルエリアここから -->
+        <section id="modalArea" class="modalArea">
+          <div id="modalBg" class="modalBg"></div>
+          <div class="modalWrapper">
+            <div class="modalContents">
+              <div id="vote"></div>
+            </div>
+            <div id="closeModal" class="closeModal">
+              ×
+            </div>
+          </div>
+        </section>
+        <!-- モーダルエリアここまで -->
+        <script>
+          (function () {
+            const modalArea = document.getElementById('modalArea');
+            const openModal = document.getElementById('openModal');
+            const closeModal = document.getElementById('closeModal');
+            const modalBg = document.getElementById('modalBg');
+            const toggle = [openModal,closeModal,modalBg];
+  
+            for (let i=0, len=toggle.length ; i<len ; i++) {
+              toggle[i].addEventListener('click',function(){
+               modalArea.classList.toggle('is-show');
+            },false);
+          }
+        }());</script> 
       </div>
     </div>
   </body>

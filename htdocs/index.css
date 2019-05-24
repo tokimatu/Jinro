@@ -251,10 +251,6 @@ body{
     border: 12px solid transparent;
     border-right: 12px solid #f5f0b2;
 }
-.otherMainS p {
-    margin: 0;
-    padding: 0;
-}
 
 .GMMainS{
     display: inline-block;
@@ -275,9 +271,25 @@ body{
     border: 12px solid transparent;
     border-right: 12px solid #baf5b2;
 }
-.GMMainS p {
-    margin: 0;
-    padding: 0;
+
+.wolfMainS{
+    display: inline-block;
+    position: relative; 
+    margin: 5px 0 0 20px;
+    padding: 12px 10px;
+    border-radius: 12px;
+    max-width: 400px;
+    background: #d48585;
+    overflow-wrap: break-word;
+}
+.wolfMainS:before{
+    content: "";
+    display: inline-block;
+    position: absolute;
+    top: 12px; 
+    left: -24px;
+    border: 12px solid transparent;
+    border-right: 12px solid #d48585;
 }
 
 /* モーダルCSSここから */

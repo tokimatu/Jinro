@@ -46,20 +46,35 @@ let votelist = [];
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended:false}));
 app.use('/htdocs',express.static(path.join(__dirname, '/htdocs')));
+
 app.get('/index', (req, res, next) => {
   res.sendFile(path.join(__dirname, './htdocs/sub.html'))});
+
+//postを受け取った場合の処理
+app.post('/index2', (req, res, next) => {
+  let name = req.body.name;
+  let pass = req.body.pass;
+  //console.log(`${name}さんのパスは${pass}だああああ！`);
+  if (name != "gm") {
+    res.sendFile(path.join(__dirname, './htdocs/sub2.html'))
+  } else {
+    res.sendFile(path.join(__dirname, './htdocs/gm.html'))
+  }
+});
+
 //postを受け取った場合の処理
 app.post('/taroinu', (req, res, next) => {
   let name = req.body.name;
   let pass = req.body.pass;
   console.log(`${name}さんのパスは${pass}だああああ！`);
-  if(name != "gm"){
+  if (name !== "" && name < 7) {
     res.sendFile(path.join(__dirname, './htdocs/index.html'))
-  } else{
-    res.sendFile(path.join(__dirname, './htdocs/gm.html'))
+  } else {
+    res.sendFile(path.join(__dirname, './htdocs/sub2.html'))
   }
 });
-  
+
+/* 開発用 */
 app.get('/taroinu', (req, res, next) => {
   res.sendFile(path.join(__dirname, './htdocs/index.html'))});
 
@@ -109,7 +124,7 @@ io.sockets.on('connection', (socket) => {
     let taro = data.value;
     if (taroinu.indexOf(taro) == -1) {
       //2019/05/19
-      taroinu.push(taro);
+      //taroinu.push(taro);
       console.log(taroinu[0]);
     }
     console.log(taroinu);

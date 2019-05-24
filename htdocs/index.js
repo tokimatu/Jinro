@@ -19,56 +19,16 @@ window.onload=() => {
         socket.emit("id",{value:document.cookie});
     }
     document.getElementById("button1").onclick=(e) => {
-        if (enterFlg) {
-            let fontSize = document.getElementById("fontSize").value;
-            let message = document.getElementById("textbox1").value;
-            let sele = document.getElementById("fontSize").getElementsByTagName('option');
-            document.getElementById("textbox1").value = "";
-            if (message === "") {
-                /* messageが空白だったら何もしない */
-            } else {
-                socket.emit("stext1", {message : message, name : name, yaku : yaku, myColor : myColor, fontSize : fontSize});
-                sele[0].selected = true;    
-            }
-            //let table = document.getElementById("table");
-            //let row, cell;
-            //let abilityText = nameList[nameList.length - 1] + " さんが入村しました。";
-            //row = table.insertRow(0);
-            //cell = row.insertCell(-1);
-            //cell.innerHTML = "" + abilityText;
-
+        let fontSize = document.getElementById("fontSize").value;
+        let message = document.getElementById("textbox1").value;
+        let sele = document.getElementById("fontSize").getElementsByTagName('option');
+        document.getElementById("textbox1").value = "";
+        if (message === "") {
+            /* messageが空白だったら何もしない */
         } else {
-            //document.getElementById("main").style.display = "block";
-            let people = document.getElementById("people").value;
-            name = document.getElementById("textbox1").value;
-            document.getElementById("textbox1").value = "";
-            if (name !== "" && name.length < 7) {
-                if (document.cookie.indexOf("taroinu" ) == -1) {
-                    enterFlg = true;
-                    document.getElementById("button1").value = "発言";
-                    const l = 16;
-                    const c = "abcdefghijklmnopqrstuvwxyz0123456789";
-                    let cl = c.length;
-                    let r = "";
-                    for (i = 0; i < l; i++) {
-                        r += c[Math.floor(Math.random()*cl)];
-                    }
-                    //2019/05/19
-                    document.cookie = 'taroinu=' + r + '; max-age=7200;';
-                    let taroinu = document.cookie;
-                    console.log(taroinu);
-                    socket.emit("touroku", {name : name, people : people, value : taroinu});
-                } else {
-                    let taroinu = document.cookie;
-                    console.log(taroinu);
-                    alert("あなたは既に入室しています");
-                }
-            } else {
-                alert("名前を指定してください！");
-                //location.reload();
-            }
+            socket.emit("stext1", {message : message, name : name, yaku : yaku, myColor : myColor, fontSize : fontSize});
+            sele[0].selected = true;    
         }
-        console.log(`${enterFlg}`);
         document.body.addEventListener("mousemove", (e2) =>{
             mX = e2.pageX;
             mY = e2.pageY;
@@ -145,19 +105,22 @@ socket.on("ctext2", (data) => {
         let colorSet = data.myColor;
         //let message1 = "";
         let table = document.getElementById("table" + day);
-        let row = table.insertRow(0);
-        row.style.width = "930px";
-        let cell1 = row.insertCell(-1);
-        let cell2 = row.insertCell(-1);
-        //cell1.style.borderBottomStyle = "solid";
-        //cell1.style.borderBottomColor = "rgba(255, 255, 255, 0.5)";
-        //cell2.style.borderBottomStyle = "solid";
-        //cell2.style.borderBottomColor = "rgba(255, 255, 255, 0.5)";
-        cell2.className = nameW;
-        cell1.style.width = "130px";
-        cell2.style.width = "800px";
+        let row1 = table.insertRow(0);
+        let row2 = table.insertRow(0);
+        let cell1 = row1.insertCell(-1);
+        let cell3 = row2.insertCell(-1);
+        let cell2 = row2.insertCell(-1);
+
+        cell2.className = "wolfMainS";
         cell2.style.color = colorSet;
-        cell2.innerText = "アウォオオオオオオオン";
+        cell2.innerHTML = "アウォオオオオオオオン";
+        cell1.innerHTML = "人狼";
+        cell1.style.width = "50px";
+        cell1.style.height = "10px";
+        cell1.style.fontSize = "15px";
+        cell1.style.whiteSpace = "nowrap";
+        cell3.style.backgroundImage = 'url(htdocs/magic.png)';
+
     }
 
 });
@@ -482,7 +445,7 @@ socket.on("voteRR", (data) => {
     let voteText2 = "";
     label.style.display = "inline-block";
     voteText2 += "" + name + " は " + select + " に投票しました。<br>";
-    console.log(voteText);
+    //console.log(voteText);
     document.getElementById("voteR" + day).innerHTML += voteText2;
     document.getElementById("voteDay" + day).checked = true;
     vdclick();
@@ -502,7 +465,7 @@ let vdclick = () => {
     //console.log("b"+radioValue);
     }
     //console.log("a"+radioValue);
-    document.getElementById("voteR" + radioValue).style.display = "block";
+    //document.getElementById("voteR" + radioValue).style.display = "block";
 }
 
 let chatclick = () => {
@@ -860,8 +823,6 @@ socket.on("god", (data) => {
 });
 
 socket.on("reTouroku", (data) => {
-    enterFlg = true;
-    document.getElementById("button1").value = "発言";
     name = data.name;
     yaku = data.yaku;
     document.getElementById("roomBtn").style.visibility = "visible";
@@ -871,8 +832,6 @@ socket.on("reTouroku", (data) => {
 });
 
 socket.on("reTouroku2", (data) => {
-    enterFlg = true;
-    document.getElementById("button1").value = "発言";
     name = data.name;
     yaku = data.yaku;
     document.getElementById("roomBtn").style.display = "block";
@@ -1055,7 +1014,6 @@ let chatWL = (moji, color, moji2, color2) => {
     cell1.innerHTML = "" + moji;
     cell2.innerHTML = "" + moji2;
  
-
     cell1.style.width = "50px";
     cell1.style.height = "10px";
     cell1.style.fontSize = "15px";

@@ -52,8 +52,14 @@ app.get('/index', (req, res, next) => {
 app.post('/taroinu', (req, res, next) => {
   let name = req.body.name;
   let pass = req.body.pass;
-  console.log(`${name}さんのパスは{pass}だああああ！`);
-  res.sendFile(path.join(__dirname, './htdocs/index.html'))});
+  console.log(`${name}さんのパスは${pass}だああああ！`);
+  if(name != "gm"){
+    res.sendFile(path.join(__dirname, './htdocs/index.html'))
+  } else{
+    res.sendFile(path.join(__dirname, './htdocs/gm.html'))
+  }
+});
+  
 app.get('/taroinu', (req, res, next) => {
   res.sendFile(path.join(__dirname, './htdocs/index.html'))});
 

@@ -67,7 +67,8 @@ app.post('/taroinu', (req, res, next) => {
   let name = req.body.name;
   let pass = req.body.pass;
   console.log(`${name}さんのパスは${pass}だああああ！`);
-  if (name !== "" && name < 7) {
+  if (name != "" && name.length < 7) {
+    console.log("duddd");
     res.sendFile(path.join(__dirname, './htdocs/index.html'))
   } else {
     res.sendFile(path.join(__dirname, './htdocs/sub2.html'))
@@ -121,7 +122,7 @@ io.sockets.on('connection', (socket) => {
     let jinro;
     let youko;
     let gmNo;
-    let taro = data.value;
+    let taro = "";
     if (taroinu.indexOf(taro) == -1) {
       //2019/05/19
       //taroinu.push(taro);
@@ -140,7 +141,7 @@ io.sockets.on('connection', (socket) => {
     // GM判断
     if (nameList[0] == name) {
       vital[0] = "(死亡)";
-      gameMode = data.people;
+      gameMode = "yaku8";
       switch (gameMode) {
         case "yaku3":
           test_array = yaku3;

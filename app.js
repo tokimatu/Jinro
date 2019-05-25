@@ -225,12 +225,29 @@ io.sockets.on('connection', (socket) => {
     if (nameList.length >= 2) {
       io.to(name).emit("touroku1", {value : r[nameList.length-2], name : name});
     }
+    console.log("お前の名前はなんなんだ", name);
     io.emit("touroku2", {name : nameList, vital : vital});
 });
 
 socket.on("gm_btn", (data) => {
   io.to(id).emit("gm", "");
   console.log("きてます？");
+});
+
+socket.on("socketJoin", (data) => {
+  let name = data.name;
+  socket.leave("room");
+  socket.join(name);
+  console.log("どうなってんですかｗｗ" + name)
+    if (nameList.length == roomNum) {
+      io.to("room").emit("clayout2", "");
+    }
+    if (nameList.length == 1) {
+      io.to(name).emit("touroku1", {value : gm3[0], name : name});
+    }
+    if (nameList.length >= 2) {
+      io.to(name).emit("touroku1", {value : r[nameList.length-2], name : nameList[nameList.length - 1]});
+    }
 });
 
 socket.on('stext1', (data) => {

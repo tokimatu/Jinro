@@ -150,11 +150,14 @@ socket.on("touroku2", (data) => {
     while (tdelete.firstChild) {
         tdelete.removeChild(tdelete.firstChild);
     }
+    let name = data.name2;
+    console.log("お前の名前は？" + name);
     let nameList = data.name;
     let vital = data.vital;
     let table = document.getElementById("sidebar");
     let row;
     let cell1, cell2, cell3, cell4;
+    //let name = data.name2;
 
     for (i = 0; i < nameList.length; i++) {
         row = table.insertRow(-1);
@@ -167,6 +170,7 @@ socket.on("touroku2", (data) => {
         cell3.innerHTML = "<input type='text' autocomplete='off' id='memo" + i + "'class='textD' value='' style='width:65px; text-align:left; height='20px';>";
         cell4.innerHTML = "前日の投票先";
     }
+    socket.emit("socketJoin", {name : name});
 });
 
 socket.on("gm", (data) => {

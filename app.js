@@ -76,10 +76,7 @@ app.post('/taroinu', (req, res, next) => {
     res.redirect('/index2');
     return;
   }
-  if(name == "gm") {
-    loginFlg = true;
-    res.render('index_gm');
-  } else if (name != "" && name.length < 7 && loginFlg == true) {
+  if (name != "" && name.length < 7 && loginFlg == true) {
     nameList2.push(name);
     console.log(`${name}さんのパスは${pass}だああああ！`);
     res.render('index', {
@@ -88,6 +85,12 @@ app.post('/taroinu', (req, res, next) => {
   } else {
     res.redirect("index2");
     };
+});
+app.post('/gm', (req, res, next) => {
+  let name = req.body.name;
+  let pass = req.body.pass;
+  loginFlg = true;
+  res.render('index_gm');
 });
 
 /* 開発用 */

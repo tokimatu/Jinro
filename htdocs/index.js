@@ -172,7 +172,6 @@ socket.on("touroku2", (data) => {
         cell3.innerHTML = "<input type='text' autocomplete='off' id='memo" + i + "'class='textD' value='' style='width:65px; text-align:left; height='20px';>";
         cell4.innerHTML = "前日の投票先";
     }
-    socket.emit("socketJoin", {name : name});
 });
 
 socket.on("gm", (data) => {

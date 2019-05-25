@@ -6,7 +6,7 @@ window.onload=() => {
     document.getElementById("test").onclick=(e) => {
         let name = "";
         name = document.getElementById("name").value;
-        socket.emit("touroku", {name : name, people : "yaku8"});
+        
         //document.getElementById("name").value = "";
         /* if (document.cookie.indexOf("taroinu" ) == -1) {
             const l = 16;

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>ここがタイトル２だよ</title>
+<script type="text/javascript" src="/socket.io/socket.io.js"></script>
+<script type="text/javascript" src="htdocs/index2.js"></script>
+<style>
+/*ここにCSSを書くよ*/
+</style>
+<script>
+/*ここにJavascriptを書くよ*/
+</script>
+</head>
+<body>
+    <p class="main-title"><%= title %></p>
+    <form action="/taroinu" method="post">
+        <label for="name">名前：</label>
+        <input type="text" name="name" id="name">
+        <label for="pass">パスワード：</label>
+        <input type="password" name="pass" id="pass">
+        <input type="submit" id="test" value="入村する">
+    </form>
+
+<!-- ここに内容を書くよ -->
+
+</body>
+</html>

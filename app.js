@@ -43,13 +43,16 @@ let vital = [];
 let gameFlg = false;
 let taroinu = [];
 let votelist = [];
+let loginFlg = false;
 
+app.set("view engine", "ejs");
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended:false}));
 app.use('/htdocs',express.static(path.join(__dirname, '/htdocs')));
 
 app.get('/index', (req, res, next) => {
-  res.sendFile(path.join(__dirname, './htdocs/sub.html'))});
+  res.render('sub');
+});
 
 //postを受け取った場合の処理
 app.post('/index2', (req, res, next) => {
@@ -57,12 +60,11 @@ app.post('/index2', (req, res, next) => {
   let pass = req.body.pass;
   //console.log(`${name}さんのパスは${pass}だああああ！`);
   if (name != "gm") {
-    res.sendFile(path.join(__dirname, './htdocs/sub2.html'))
+    res.redirect('/index2');
   } else {
-    res.sendFile(path.join(__dirname, './htdocs/gm.html'))
+    res.render('gm');
   }
 });
-
 //postを受け取った場合の処理
 app.post('/taroinu', (req, res, next) => {
   let name = req.body.name;
@@ -71,24 +73,34 @@ app.post('/taroinu', (req, res, next) => {
   // 名前の重複禁止
   let ret = nameList2.indexOf(name);
   if (ret != -1) {
-    res.sendFile(path.join(__dirname, './htdocs/sub2.html'))
+    res.redirect('/index2');
     return;
   }
   if(name == "gm") {
-    res.sendFile(path.join(__dirname, './htdocs/index_gm.html'))
-  } else if (name != "" && name.length < 7) {
+    loginFlg = true;
+    res.render('index_gm');
+  } else if (name != "" && name.length < 7 && loginFlg == true) {
     nameList2.push(name);
     console.log(`${name}さんのパスは${pass}だああああ！`);
-    res.sendFile(path.join(__dirname, './htdocs/index.html'))
+    res.render('index', {
+      title: name
+    });
   } else {
-    res.sendFile(path.join(__dirname, './htdocs/sub2.html'))
-  }
+    res.redirect("index2");
+    };
 });
 
 /* 開発用 */
-app.get('/taroinu', (req, res, next) => {
-  res.sendFile(path.join(__dirname, './htdocs/index.html'))});
-
+//app.get('/taroinu', (req, res, next) => {
+  //res.sendFile(path.join(__dirname, './htdocs/index.html'))});
+app.get('/taroinu', function(req, res, next) {
+    res.render('index');
+  });
+app.get('/index2', function(req, res, next) {
+  res.render('sub2', {
+    title: '名前の登録！！'
+  });
+});
 //io.set('heartbeat timeout', 5000);
 //io.set('heartbeat interval', 5000);
 io.sockets.on('connection', (socket) => {

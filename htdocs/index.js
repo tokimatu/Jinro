@@ -1,6 +1,6 @@
 let socket = io.connect();
 let enterFlg = false;
-let name = "";
+let name = ""
 let day = 0;
 let gameMode;
 let dayFlg;
@@ -14,6 +14,8 @@ let myColor = null;
 
 // 送信
 window.onload=() => {
+    name = document.getElementById("header").innerText;
+    socket.emit("touroku", {name : name, people : null});
     if (document.cookie.indexOf("taroinu") != -1) {
         console.log(document.cookie);
         socket.emit("id",{value:document.cookie});

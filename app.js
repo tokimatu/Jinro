@@ -141,10 +141,12 @@ io.sockets.on('connection', (socket) => {
 
     // 長い名前と空白の禁止
     if (name === "" || name.length > 7) {
+      io.to(id).emit("error", "");
       return;
     }
     // 名前の重複禁止
     if (ret != -1) {
+      io.to(id).emit("error", "");
       return;
     }
     //console.log(nameList.length);

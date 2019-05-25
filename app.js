@@ -74,7 +74,9 @@ app.post('/taroinu', (req, res, next) => {
     res.sendFile(path.join(__dirname, './htdocs/sub2.html'))
     return;
   }
-  if (name != "" && name.length < 7) {
+  if(name == "gm") {
+    res.sendFile(path.join(__dirname, './htdocs/index_gm.html'))
+  } else if (name != "" && name.length < 7) {
     nameList2.push(name);
     console.log(`${name}さんのパスは${pass}だああああ！`);
     res.sendFile(path.join(__dirname, './htdocs/index.html'))
@@ -210,6 +212,7 @@ io.sockets.on('connection', (socket) => {
       io.to(id).emit("gm", "");
       io.emit("gm2", "");
     }
+    
 
     socket.leave("room");
     socket.join(name);
@@ -223,6 +226,11 @@ io.sockets.on('connection', (socket) => {
       io.to(name).emit("touroku1", {value : r[nameList.length-2], name : name});
     }
     io.emit("touroku2", {name : nameList, vital : vital});
+});
+
+socket.on("gm_btn", (data) => {
+  io.to(id).emit("gm", "");
+  console.log("きてます？");
 });
 
 socket.on('stext1', (data) => {

@@ -14,7 +14,9 @@ let myColor = null;
 
 // 送信
 window.onload=() => {
-    socket.emit("gm_btn");
+    let people = document.getElementById("header").innerText;
+    socket.emit("touroku", {name : "GM", people : people});
+    //socket.emit("gm_btn");
     if (document.cookie.indexOf("taroinu") != -1) {
         console.log(document.cookie);
         socket.emit("id",{value:document.cookie});

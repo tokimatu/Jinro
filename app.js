@@ -89,8 +89,11 @@ app.post('/taroinu', (req, res, next) => {
 app.post('/gm', (req, res, next) => {
   let name = req.body.name;
   let pass = req.body.pass;
+  let people = req.body.ninzuu;
   loginFlg = true;
-  res.render('index_gm');
+  res.render('index_gm', {
+    title: people
+  });
 });
 
 /* 開発用 */

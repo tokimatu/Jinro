@@ -8,7 +8,6 @@ window.onload=() => {
         let people = "";
         name = document.getElementById("name").value;
         people = document.getElementById("people").value;
-        socket.emit("touroku", {name : name, people : people});
         //document.getElementById("name").value = "";
         /* if (document.cookie.indexOf("taroinu" ) == -1) {
             const l = 16;

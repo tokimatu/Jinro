@@ -25,6 +25,7 @@ let r = [];
 let allsurvivor = [];
 let gm3;
 let nameList = [];
+let nameList2 = [];
 let chatLog = [];
 chatLog[0] = [,];
 let timeList = [];
@@ -66,9 +67,16 @@ app.post('/index2', (req, res, next) => {
 app.post('/taroinu', (req, res, next) => {
   let name = req.body.name;
   let pass = req.body.pass;
-  console.log(`${name}さんのパスは${pass}だああああ！`);
+
+  // 名前の重複禁止
+  let ret = nameList2.indexOf(name);
+  if (ret != -1) {
+    res.sendFile(path.join(__dirname, './htdocs/sub2.html'))
+    return;
+  }
   if (name != "" && name.length < 7) {
-    console.log("duddd");
+    nameList2.push(name);
+    console.log(`${name}さんのパスは${pass}だああああ！`);
     res.sendFile(path.join(__dirname, './htdocs/index.html'))
   } else {
     res.sendFile(path.join(__dirname, './htdocs/sub2.html'))
@@ -115,6 +123,7 @@ io.sockets.on('connection', (socket) => {
 
   socket.on('touroku', (data) => {
     let name = data.name;
+    let people = data.people;
     let id = socket.id;
     let ret = nameList.indexOf(name);
     let test_array, test_array2;
@@ -130,9 +139,12 @@ io.sockets.on('connection', (socket) => {
     }
     console.log(taroinu);
 
+    // 長い名前と空白の禁止
+    if (name === "" || name.length > 7) {
+      return;
+    }
     // 名前の重複禁止
     if (ret != -1) {
-      io.to(id).emit("error", "");
       return;
     }
     //console.log(nameList.length);
@@ -141,7 +153,7 @@ io.sockets.on('connection', (socket) => {
     // GM判断
     if (nameList[0] == name) {
       vital[0] = "(死亡)";
-      gameMode = "yaku8";
+      gameMode = people;
       switch (gameMode) {
         case "yaku3":
           test_array = yaku3;
@@ -202,11 +214,10 @@ io.sockets.on('connection', (socket) => {
     if (nameList.length == roomNum) {
       io.to("room").emit("clayout2", "");
     }
-    if (nameList.length == 1){
-      
+    if (nameList.length == 1) {
       io.to(name).emit("touroku1", {value : gm3[0], name : name});
     }
-    if (nameList.length >= 2){
+    if (nameList.length >= 2) {
       io.to(name).emit("touroku1", {value : r[nameList.length-2], name : name});
     }
     io.emit("touroku2", {name : nameList, vital : vital});
@@ -459,7 +470,7 @@ socket.on('stext1', (data) => {
 
       isYouko = yakusearch(uraS);
 
-      if(isYouko === "妖狐") {
+      if (isYouko === "妖狐") {
         let r1 = allsurvivor.indexOf(uraS);
         if (r1 >= 0) {
           allsurvivor.splice(r1, 1);

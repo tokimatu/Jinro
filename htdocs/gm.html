@@ -3,6 +3,8 @@
 <head>
 <meta charset="utf-8">
 <title>GMなんだよなー</title>
+<script type="text/javascript" src="/socket.io/socket.io.js"></script>
+<script type="text/javascript" src="htdocs/gm.js"></script>
 <style>
 /*ここにCSSを書くよ*/
 </style>
@@ -11,8 +13,26 @@
 </script>
 </head>
 <body>
+   <form action="/taroinu" method="post">
+      <label for="name">名前：</label>
+      <input type="text" name="name" id="name" value="gm">
+      <label for="pass">パスワード：</label>
+      <input type="password" name="pass" id="pass" value="gm">
+      <p id="roomNum">部屋人数：<br>
+         <select name="ninzuu" id = "people">
+           <option value=yaku3>3人</option>
+           <option value=yaku8>8人</option>
+           <option value=yaku9>9人</option>
+           <option value=yaku10>10人</option>
+           <option value=yaku11>11人</option>
+           <option value=yaku12>12人</option>
+           <option value=yaku13>13人</option>
+           <option value=yaku14>14人</option>
+         </select>
+      </p>
+      <input type="submit" id="test" value="入村する">
+   </form>
 
-   
 
 <!-- ここに内容を書くよ -->
 

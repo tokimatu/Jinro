@@ -140,7 +140,7 @@ socket.on("clayout2", (data) => {
 socket.on("touroku1", (data) => {
     yaku = data.value;
     let name = data.name;
-    // console.log(`${yaku}`);
+    console.log(`${yaku}`);
     document.getElementById("header").innerText = `${name}さんは${yaku}です。`;
 
 });

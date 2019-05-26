@@ -5,6 +5,7 @@ const path = require('path');
 const bodyParser = require('body-parser');
 const fs = require('fs');
 const date = require('date-utils');
+const MongoClient = require('mongodb').MongoClient;
 
 // expressアプリを生成する
 const http = require('http');
@@ -44,6 +45,7 @@ let gameFlg = false;
 let taroinu = [];
 let votelist = [];
 let loginFlg = false;
+let uri = 'mongodb+srv://taroinu-tokin:Dorakue10@cluster0-tvsvy.mongodb.net/test?retryWrites=true';
 
 app.set("view engine", "ejs");
 app.use(bodyParser.json());
@@ -55,23 +57,70 @@ app.get('/index', (req, res, next) => {
 });
 
 //postを受け取った場合の処理
+app.post('/index', (req, res, next) => {
+  let name3 = req.body.name3;
+  let pass2 = req.body.pass2;
+  let check = false;
+  console.log("check");
+  MongoClient.connect(uri, {useNewUrlParser: true}, function(err, client) {
+    let collection = client.db('jinro').collection('users');
+    collection.find({"name": name3}).toArray((error, documents) => {
+      for (let document of documents) {
+        if(document.name == name3) {
+          check = true;
+        } 
+          console.log(check);
+      }
+    });
+    console.log(!check);
+    if(check == null) {
+      collection.insertOne({
+        "name" : name3,
+        "pass" : pass2
+      });
+    }
+    client.close();
+  });
+  res.redirect("/index");
+});
+
+
 app.post('/index2', (req, res, next) => {
+  
   let name = req.body.name;
   let name2 = req.body.name2;
+  let name3 = req.body.name3;
   let pass = req.body.pass;
-  //console.log(`${name}さんのパスは${pass}だああああ！`);
-  if (name != "gm" && name2 == null) {
-    res.render('sub2', {
-      title: name　+ "さん、人狼の村へようこそ"
+  let check = {"name": name, "pass": pass};
+  MongoClient.connect(uri, {useNewUrlParser: true}, function(err, client) {
+    let collection = client.db('jinro').collection('users');
+    collection.find(check).toArray((error, documents) => {
+          if(error){
+            console.log(error);
+          }
+          if(documents != "") {
+              //console.log(`${name}さんのパスは${pass}だああああ！`);
+            if (name != "gm" && name2 == null) {
+              res.render('sub2', {
+                title: name　+ "さん、人狼の村へようこそ"
+              });
+            }else if(name == null && name2 != "gm"){
+              res.render('sub2', {
+                title: name2 + "さんの名前は既に使われているか、GMが入室していません"
+            }); 
+            }
+            else if (name == "gm") {
+              res.render('gm');
+            }
+          } else {
+            res.redirect("/index");
+          }
+      //res.redirect(302, "/index");
     });
-  }else if(name == null && name2 != "gm"){
-    res.render('sub2', {
-      title: name2 + "さんの名前は既に使われているか、GMが入室していません"
-   }); 
-  }
-  else if (name == "gm") {
-    res.render('gm');
-  }
+    client.close();
+    console.log(check);
+    
+  });
 });
 //postを受け取った場合の処理
 app.post('/taroinu', (req, res, next) => {

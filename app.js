@@ -60,27 +60,29 @@ app.get('/index', (req, res, next) => {
 app.post('/index', (req, res, next) => {
   let name3 = req.body.name3;
   let pass2 = req.body.pass2;
-  let check = false;
+  let check;
   console.log("check");
-  MongoClient.connect(uri, {useNewUrlParser: true}, function(err, client) {
-    let collection = client.db('jinro').collection('users');
-    collection.find({"name": name3}).toArray((error, documents) => {
-      for (let document of documents) {
-        if(document.name == name3) {
-          check = true;
-        } 
-          console.log(check);
+  
+    sele(name3, pass2, check);
+    /*collection.find({"name": name3}).toArray((error, documents) => {
+      if(error){
+        console.log("error:" + error);
       }
-    });
-    console.log(!check);
-    if(check == null) {
+      if(documents == "") {
+        check = true;
+        console.log("ない");
+      } else {
+        check = false;
+        console.log("ある");
+      }
+    });*/
+    /*console.log(!check);
+    if(check == false) {
       collection.insertOne({
         "name" : name3,
         "pass" : pass2
       });
-    }
-    client.close();
-  });
+    }*/
   res.redirect("/index");
 });
 
@@ -853,6 +855,44 @@ let gameFinish = () => {
       return me = "人狼の勝ち"
     }
   } return me = ""
+}
+
+sele = (name3, pass2, check) => {
+  MongoClient.connect(uri, {useNewUrlParser: true}, function(err, client) {
+    let collection = client.db('jinro').collection('users');
+    
+    collection.find({"name": name3}).toArray((error, documents) => {
+    if(error){
+      console.log("error:" + error);
+    }
+    if(documents == "") {
+      check = true;
+      console.log("ない");
+      client.close();
+      return wri(name3, pass2, check);
+    } else {
+      check = false;
+      console.log("ある");
+      client.close();
+      return wri(name3, pass2, check);
+    }
+  });
+  });
+  
+}
+wri = (name3, pass2, check) => {
+  MongoClient.connect(uri, {useNewUrlParser: true}, function(err, client) {
+    let collection = client.db('jinro').collection('users');
+  console.log(check);
+    if(check == true) {
+      collection.insertOne({
+        "name" : name3,
+        "pass" : pass2
+      });
+    }
+    client.close();
+  });
+    return;
 }
 
 server.listen(port, () => console.log(`Listening on Port 3000`));

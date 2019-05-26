@@ -212,6 +212,14 @@ body{
     height: 50px;
 }
 
+.gazou{
+    background-position: center;
+    background-repeat: no-repeat;
+    border-radius: 30%;
+    width: 50px;
+    height: 50px;
+}
+
 .myMainS{
     display: inline-block;
     position: relative; 

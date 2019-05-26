@@ -21,6 +21,5 @@ window.onload=() => {
             let taroinu = document.cookie;
             console.log(taroinu);
         } */
-        
     }
 }

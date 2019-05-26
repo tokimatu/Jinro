@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <title>ここがタイトル２だよ</title>
 <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+<link rel="stylesheet" href="htdocs/index.css" type="text/css">
 <style>
 /*ここにCSSを書くよ*/
 </style>
@@ -18,6 +19,34 @@
         <input type="text" name="name2" id="name">
         <label for="pass">パスワード：</label>
         <input type="password" name="pass" id="pass">
+
+        <input type="file" onchange="onInputChanged(event)">
+        <img id="previewLarge" style="display:none">
+        <hr>アイコンサンプル:<br>
+        <img id="previewSmall">
+      
+        <script>
+            function onInputChanged(e) {
+                var file = e.target.files && e.target.files[0];
+                if (file === null) {
+                    return;
+                }
+                URL.revokeObjectURL(previewLarge.src);
+                previewLarge.src = URL.createObjectURL(file);
+            }
+            previewLarge.onload = function(e){
+            // 画像データの縦横サイズを取得する
+            var image = previewLarge;
+            var width = image.naturalWidth;
+            var height = image.naturalHeight;
+            // 縮小
+            var canvas = document.createElement('canvas');
+            canvas.width = 50;
+            canvas.height = 50;
+            canvas.getContext("2d").drawImage(image, 0, 0, 50, 50);
+            previewSmall.src = canvas.toDataURL();
+        }
+        </script>
         <input type="submit" id="test" value="入村する">
     </form>
 

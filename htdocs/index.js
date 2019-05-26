@@ -96,6 +96,7 @@ socket.on("ctext1", (data) => {
     } else {
         cell2.className = "otherMainS";
         cell1.innerText = "" + message1;
+        cell1.className = "gazou";
         cell3.style.backgroundImage = 'url(htdocs/magic.png)';
     }
 });

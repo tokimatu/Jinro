@@ -57,23 +57,31 @@ app.get('/index', (req, res, next) => {
 //postを受け取った場合の処理
 app.post('/index2', (req, res, next) => {
   let name = req.body.name;
+  let name2 = req.body.name2;
   let pass = req.body.pass;
   //console.log(`${name}さんのパスは${pass}だああああ！`);
-  if (name != "gm") {
-    res.redirect('/index2');
-  } else {
+  if (name != "gm" && name2 == null) {
+    res.render('sub2', {
+      title: name　+ "さん、人狼の村へようこそ"
+    });
+  }else if(name == null && name2 != "gm"){
+    res.render('sub2', {
+      title: name2 + "さんの名前は既に使われているか、GMが入室していません"
+   }); 
+  }
+  else if (name == "gm") {
     res.render('gm');
   }
 });
 //postを受け取った場合の処理
 app.post('/taroinu', (req, res, next) => {
-  let name = req.body.name;
+  let name = req.body.name2;
   let pass = req.body.pass;
 
   // 名前の重複禁止
   let ret = nameList2.indexOf(name);
   if (ret != -1) {
-    res.redirect('/index2');
+    res.redirect(307, '/index2');
     return;
   }
   if (name != "" && name.length < 7 && loginFlg == true) {
@@ -83,7 +91,7 @@ app.post('/taroinu', (req, res, next) => {
       title: name
     });
   } else {
-    res.redirect("index2");
+    res.redirect(307, "/index2");
     };
 });
 app.post('/gm', (req, res, next) => {
@@ -92,11 +100,12 @@ app.post('/gm', (req, res, next) => {
   let people = req.body.ninzuu;
   loginFlg = true;
   res.render('index_gm', {
-    title: people
-  });
+  title: people
+})
+  
 });
 
-/* 開発用 */
+/* 開発用 
 //app.get('/taroinu', (req, res, next) => {
   //res.sendFile(path.join(__dirname, './htdocs/index.html'))});
 app.get('/taroinu', function(req, res, next) {
@@ -106,7 +115,7 @@ app.get('/index2', function(req, res, next) {
   res.render('sub2', {
     title: '名前の登録！！'
   });
-});
+});*/
 //io.set('heartbeat timeout', 5000);
 //io.set('heartbeat interval', 5000);
 io.sockets.on('connection', (socket) => {

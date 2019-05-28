@@ -27,6 +27,7 @@ let allsurvivor = [];
 let gm3;
 let nameList = [];
 let nameList2 = [];
+let gazouList = [];
 let chatLog = [];
 chatLog[0] = [,];
 let timeList = [];
@@ -97,26 +98,25 @@ app.post('/index2', (req, res, next) => {
   MongoClient.connect(uri, {useNewUrlParser: true}, function(err, client) {
     let collection = client.db('jinro').collection('users');
     collection.find(check).toArray((error, documents) => {
-          if(error){
-            console.log(error);
-          }
-          if(documents != "") {
-              //console.log(`${name}さんのパスは${pass}だああああ！`);
-            if (name != "gm" && name2 == null) {
-              res.render('sub2', {
-                title: name　+ "さん、人狼の村へようこそ"
-              });
-            }else if(name == null && name2 != "gm"){
-              res.render('sub2', {
-                title: name2 + "さんの名前は既に使われているか、GMが入室していません"
-            }); 
-            }
-            else if (name == "gm") {
-              res.render('gm');
-            }
-          } else {
-            res.redirect("/index");
-          }
+      if (error) {
+        console.log(error);
+      }
+      if (documents != "") {
+          //console.log(`${name}さんのパスは${pass}だああああ！`);
+        if (name != "gm" && name2 == null) {
+          res.render('sub2', {
+            title: name　+ "さん、人狼の村へようこそ"
+          });
+        } else if (name == null && name2 != "gm") {
+          res.render('sub2', {
+            title: name2 + "さんの名前は既に使われているか、GMが入室していません"
+        }); 
+        } else if (name == "gm") {
+          res.render('gm');
+        }
+      } else {
+        res.redirect("/index");
+      }
       //res.redirect(302, "/index");
     });
     client.close();
@@ -128,6 +128,7 @@ app.post('/index2', (req, res, next) => {
 app.post('/taroinu', (req, res, next) => {
   let name = req.body.name2;
   let pass = req.body.pass;
+  let gazou = req.body.gazou;
 
   // 名前の重複禁止
   let ret = nameList2.indexOf(name);
@@ -138,13 +139,15 @@ app.post('/taroinu', (req, res, next) => {
   if (name != "" && name.length < 7 && loginFlg == true) {
     nameList2.push(name);
     console.log(`${name}さんのパスは${pass}だああああ！`);
+    console.log(`${gazou}！`);
     res.render('index', {
-      title: name
+      title: name, title2: gazou
     });
   } else {
     res.redirect(307, "/index2");
-    };
+  };
 });
+
 app.post('/gm', (req, res, next) => {
   let name = req.body.name;
   let pass = req.body.pass;
@@ -152,8 +155,7 @@ app.post('/gm', (req, res, next) => {
   loginFlg = true;
   res.render('index_gm', {
   title: people
-})
-  
+  })
 });
 
 /* 開発用 
@@ -204,6 +206,7 @@ io.sockets.on('connection', (socket) => {
   socket.on('touroku', (data) => {
     let name = data.name;
     let people = data.people;
+    let gazou = data.gazou;
     let id = socket.id;
     let ret = nameList.indexOf(name);
     let test_array, test_array2;
@@ -231,6 +234,7 @@ io.sockets.on('connection', (socket) => {
     }
     //console.log(nameList.length);
     nameList.push(name);
+    gazouList.push(gazou);
     vital.push("(生存中)");
     // GM判断
     if (nameList[0] == name) {
@@ -304,7 +308,7 @@ io.sockets.on('connection', (socket) => {
       io.to(name).emit("touroku1", {value : r[nameList.length-2], name : name});
     }
     console.log("お前の名前はなんなんだ", name);
-    io.emit("touroku2", {name : nameList, vital : vital});
+    io.emit("touroku2", {name : nameList, vital : vital, gazou : gazouList});
 });
 
 socket.on("gm_btn", (data) => {
@@ -336,6 +340,7 @@ socket.on('stext1', (data) => {
   let ntime2 = ntime1.toFormat("HH24:MI:SS");
   let dataname = data.message;
   let fontSize = data.fontSize;
+  let gazou = data.gazou;
 
   // console.log(`${chatLog[1][1]}さんが${chatLog[1][0]}を発言した`);
   // console.log(`${data.name}`);
@@ -344,32 +349,32 @@ socket.on('stext1', (data) => {
       timeList.push([[ntime2], [day]]);
       chatLog.push([[dataname], [name]]);
     }
-    io.emit("ctext1", {value : dataname, date : ntime2, name : name, myColor : myColor, fontSize : fontSize});
+    io.emit("ctext1", {value : dataname, date : ntime2, name : name, myColor : myColor, fontSize : fontSize, gazou : gazou});
   } else if (dayFlg == 3) {　// 夜
     if (yaku === "人狼") {
       let serA = searchArray(r, "人狼");
       //console.log(serA);
       socket.broadcast.emit("ctext2", {value : dataname, date : ntime2, name : name, myColor : "red", gmyaku : gm3[0], fontSize : fontSize});
-      io.to(nameList[0]).emit("ctext1", {value : dataname, date : ntime2, name : name, myColor : myColor, fontSize : fontSize});
-      io.to(nameList[serA[0] + 1]).emit("ctext1", {value : dataname, date : ntime2, name : name, myColor : myColor, fontSize : fontSize});
-      io.to(nameList[serA[1] + 1]).emit("ctext1", {value : dataname, date : ntime2, name : name, myColor : myColor, fontSize : fontSize});
+      io.to(nameList[0]).emit("ctext1", {value : dataname, date : ntime2, name : name, myColor : myColor, fontSize : fontSize, gazou : gazou});
+      io.to(nameList[serA[0] + 1]).emit("ctext1", {value : dataname, date : ntime2, name : name, myColor : myColor, fontSize : fontSize, gazou : gazou});
+      io.to(nameList[serA[1] + 1]).emit("ctext1", {value : dataname, date : ntime2, name : name, myColor : myColor, fontSize : fontSize, gazou : gazou});
       io.to("room").emit("ctext1", {value : dataname, date : ntime2, name : name, myColor : myColor, fontSize : fontSize});
     
     } else if(yaku === "共有") {
       let serB = searchArray(r, "共有");
-      io.to(nameList[0]).emit("ctext1", {value : dataname, date : ntime2, name : name, myColor : myColor, fontSize : fontSize});
-      io.to(nameList[serB[0] + 1]).emit("ctext1", {value : dataname, date : ntime2, name : name, myColor : myColor, fontSize : fontSize});
-      io.to(nameList[serB[1] + 1]).emit("ctext1", {value : dataname, date : ntime2, name : name, myColor : myColor, fontSize : fontSize});
-      io.to("room").emit("ctext1", {value : dataname, date : ntime2, name : name, myColor : myColor, fontSize : fontSize});
+      io.to(nameList[0]).emit("ctext1", {value : dataname, date : ntime2, name : name, myColor : myColor, fontSize : fontSize, gazou : gazou});
+      io.to(nameList[serB[0] + 1]).emit("ctext1", {value : dataname, date : ntime2, name : name, myColor : myColor, fontSize : fontSize, gazou : gazou});
+      io.to(nameList[serB[1] + 1]).emit("ctext1", {value : dataname, date : ntime2, name : name, myColor : myColor, fontSize : fontSize, gazou : gazou});
+      io.to("room").emit("ctext1", {value : dataname, date : ntime2, name : name, myColor : myColor, fontSize : fontSize, gazou : gazou});
     
     } else if(name !== nameList[0]) {
       //if (name != nameList[0]) {
-      io.to(nameList[0]).emit("ctext1", {value : dataname, date : ntime2, name : name, myColor : myColor, fontSize : fontSize});
+      io.to(nameList[0]).emit("ctext1", {value : dataname, date : ntime2, name : name, myColor : myColor, fontSize : fontSize, gazou : gazou});
       //}
-      io.to(name).emit("ctext1", {value : dataname, date : ntime2, name : name, myColor : myColor, fontSize : fontSize});
-      io.to("room").emit("ctext1", {value : dataname, date : ntime2, name : name, myColor : myColor, fontSize : fontSize});
+      io.to(name).emit("ctext1", {value : dataname, date : ntime2, name : name, myColor : myColor, fontSize : fontSize, gazou : gazou});
+      io.to("room").emit("ctext1", {value : dataname, date : ntime2, name : name, myColor : myColor, fontSize : fontSize, gazou : gazou});
     } else {
-      io.emit("ctext1", {value : dataname, date : ntime2, name : name, myColor : myColor, fontSize : fontSize});
+      io.emit("ctext1", {value : dataname, date : ntime2, name : name, myColor : myColor, fontSize : fontSize, gazou : gazou});
     }
   } else if (dayFlg == 3) {
 

@@ -1,6 +1,7 @@
 let socket = io.connect();
 let enterFlg = false;
-let name = ""
+let name = "";
+let gazou = "";
 let day = 0;
 let gameMode;
 let dayFlg;
@@ -15,7 +16,16 @@ let myColor = null;
 // 送信
 window.onload=() => {
     name = document.getElementById("header").innerText;
-    socket.emit("touroku", {name : name, people : null});
+    gazou = document.getElementById("header2").innerText;
+    var canvas = document.getElementById('c1');
+    var ctx = canvas.getContext('2d');
+    var img = new Image();
+    img.src = gazou;
+    img.onload = function() {
+        ctx.drawImage(img, 0, 0);
+    }
+
+    socket.emit("touroku", {name : name, people : null, gazou, gazou});
     if (document.cookie.indexOf("taroinu") != -1) {
         console.log(document.cookie);
         socket.emit("id",{value:document.cookie});
@@ -28,7 +38,7 @@ window.onload=() => {
         if (message === "") {
             /* messageが空白だったら何もしない */
         } else {
-            socket.emit("stext1", {message : message, name : name, yaku : yaku, myColor : myColor, fontSize : fontSize});
+            socket.emit("stext1", {message : message, name : name, yaku : yaku, myColor : myColor, fontSize : fontSize, gazou : gazou});
             sele[0].selected = true;    
         }
         document.body.addEventListener("mousemove", (e2) =>{
@@ -68,6 +78,7 @@ socket.on("ctext1", (data) => {
     let cell3 = row2.insertCell(-1);
     let cell2 = row2.insertCell(-1);
     let fontSize1 = data.fontSize;
+    let icon = data.gazou;
 
     message1 += nameW;
     message2 += `<font size="${fontSize1}"></font>`;
@@ -97,7 +108,15 @@ socket.on("ctext1", (data) => {
         cell2.className = "otherMainS";
         cell1.innerText = "" + message1;
         cell1.className = "gazou";
-        cell3.style.backgroundImage = 'url(htdocs/magic.png)';
+        if (icon) {
+            cell3.style.backgroundImage = "url(" + icon + ")";
+        } else {
+            if (colorSet) {
+                cell3.style.backgroundColor = colorSet;
+            } else {
+                cell3.style.backgroundColor = "white";
+            }
+        }
     }
 });
 
@@ -145,7 +164,6 @@ socket.on("touroku1", (data) => {
     let name = data.name;
     console.log(`${yaku}`);
     document.getElementById("header").innerText = `${name}さんは${yaku}です。`;
-
 });
 
 socket.on("touroku2", (data) => {

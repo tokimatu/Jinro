@@ -57,6 +57,10 @@ app.get('/index', (req, res, next) => {
   res.render('sub');
 });
 
+app.get('/log', (req, res, next) => {
+  res.render('log');
+});
+
 //postを受け取った場合の処理
 app.post('/index', (req, res, next) => {
   let name3 = req.body.name3;
@@ -91,11 +95,6 @@ app.post('/index', (req, res, next) => {
 app.post('/index2', (req, res, next) => {
   
   let name = req.body.name;
-  if(!name) {
-    let aa = JSON.parse(req.body.text);
-    console.dir(aa);
-    console.log(aa.name);
-  }
   let name2 = req.body.name2;
   let name3 = req.body.name3;
   let pass = req.body.pass;
@@ -724,9 +723,16 @@ socket.on('stext1', (data) => {
     io.to(id).emit("nameListR", {value : nameList});
   });
 
+  socket.on('getLog', (data) => {
+    let id = socket.id;
+    day = data.day;
+    zone = data.zone;
+    readLog(day, zone, id);
+  });
 
   socket.on('disconnect', () => {
   });
+
 });
 
 
@@ -923,6 +929,21 @@ writeLog = (name, yaku, day, zone, chat) => {
     client.close();
   });
     return;
+}
+
+readLog = (day, zone, id) => {
+  let check = {"day": day, "zone": zone};
+  MongoClient.connect(uri, {useNewUrlParser: true}, function(err, client) {
+    let collection = client.db('jinro').collection('chatLog');
+    collection.find(check).toArray((error, documents) => {
+      if (error) {
+        console.log(error);
+      }
+      console.log(documents);
+      io.to(id).emit("putLog", {"value" : documents});
+    });
+    client.close();
+  })
 }
 
 server.listen(port, () => console.log(`Listening on Port 3000`));

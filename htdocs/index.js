@@ -71,14 +71,18 @@ socket.on("ctext1", (data) => {
         cell2.className = "otherMainS";
         cell1.innerText = "" + message1;
         cell1.className = "gazou";
-        if (icon) {
-            cell3.style.backgroundImage = "url(" + icon + ")";
+        if (nameW === "GM") {
+            cell3.style.backgroundImage = "url(htdocs/magic.png)";
         } else {
-            if (colorSet) {
-                cell3.style.backgroundColor = colorSet;
+            if (icon) {
+                cell3.style.backgroundImage = "url(" + icon + ")";
             } else {
-                cell3.style.backgroundColor = "white";
-            }
+                if (colorSet) {
+                    cell3.style.backgroundColor = colorSet;
+                } else {
+                    cell3.style.backgroundColor = "white";
+                }
+            }    
         }
     }
 });
@@ -351,14 +355,6 @@ socket.on("vote", (data) => {
                 bbb.style.backgroundColor = "#afdb69";
             }
         }
-        try {
-            let randomR = Math.round( Math.random() * (nameList.length - 1)) * 2 + 1;
-            vote.childNodes[randomR].checked = true;
-            vote.childNodes[randomR + 1].style.backgroundColor = "#afdb69";
-        }
-        catch(e) {
-
-        }   
     }
 });
 
@@ -724,7 +720,7 @@ socket.on("everyone", (data) => {
 });
 
 socket.on("reload", (data) => {
-    if(name == "") {
+    if (name == "GM") {
         postForm({"name": 'gm', "pass" : 'gm'})
     } else {
         postForm({"name": "a", "pass" : "a"})
@@ -828,8 +824,6 @@ let timerB = (dayFlg1, day1, time1) => {
       time2.style.fontSize = "20px";
       //console.log(time);
         if (dayFlg == 1 && time == 20) {
-            let table2 = document.getElementById("table" + day);
-            let row2, cell3, cell4;
             let abilityText = "";
             abilityText += "あと20秒で昼時間が終了します。投票先の確認をお願いします。";
             chatWL("GM", null, abilityText, "red");
@@ -883,7 +877,10 @@ let gameStart1 = (dayFlg1) => {
                 if (vote.childNodes[2 * i + 1].checked) {
                     let voteRV = vote.childNodes[2 * i + 1].value;
                     socket.emit("voteR", {select : voteRV, name : name});
-                    //console.log(voteRV);
+                    // 未投票に戻す
+                    vote.childNodes[2 * i + 1].checked = false;
+                    vote.childNodes[2 * i + 2].style.backgroundColor = "#f6f3f4";
+                    //console.log(i);
                     break;
                 }
             }

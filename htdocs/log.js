@@ -1,11 +1,12 @@
 let socket = io.connect();
-socket.emit('getLog', {"day" : 0, "zone" : 3});
-
+socket.emit('getDateTime');
 
 socket.on('putLog', (data) => {
     let table = document.getElementById("table");
-    
-    obj = data.value;
+    while (table.firstChild) {
+        table.removeChild(table.firstChild);
+    }
+    let obj = data.value;
     console.log(obj[0].chat);
     for(let i in obj) {
         console.log(obj[i].chat)
@@ -22,6 +23,22 @@ socket.on('putLog', (data) => {
     
 });
 
+socket.on('putDateTime', (data) => {
+    let sele = document.getElementById("dateTime");
+    let obj = data.value;
+    console.log(obj[0]);
+    for(let i in obj) {
+        let op = document.createElement("option");
+        op.value = obj[i];  //value値
+        op.text = obj[i];   //テキスト値
+        sele.appendChild(op);
+    }
+
+});
+
 window.onload=() => {
-    
+    let sele = document.getElementById("dateTime");
+    document.getElementById("getLog").onclick=() => {
+        socket.emit('getLog', {"day" : 0, "zone" : 3, "timeDate" : sele.value});
+    }
 }

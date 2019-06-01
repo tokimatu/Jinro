@@ -46,6 +46,7 @@ let gameFlg = false;
 let taroinu = [];
 let votelist = [];
 let loginFlg = false;
+let pStartDT;
 let uri = 'mongodb+srv://taroinu-tokin:Dorakue10@cluster0-tvsvy.mongodb.net/test?retryWrites=true';
 
 app.set("view engine", "ejs");
@@ -352,7 +353,7 @@ socket.on('stext1', (data) => {
     if (gameFlg === true) {
       timeList.push([[ntime2], [day]]);
       chatLog.push([[dataname], [name]]);
-      writeLog(name, yaku, day, dayFlg, dataname, dataname)
+      writeLog(name, yaku, day, dayFlg, dataname, pStartDT)
     }
     io.emit("ctext1", {value : dataname, date : ntime2, name : name, myColor : myColor, fontSize : fontSize, gazou : gazou});
   } else if (dayFlg == 3) {　// 夜
@@ -364,14 +365,14 @@ socket.on('stext1', (data) => {
       io.to(nameList[serA[0] + 1]).emit("ctext1", {value : dataname, date : ntime2, name : name, myColor : myColor, fontSize : fontSize, gazou : gazou});
       io.to(nameList[serA[1] + 1]).emit("ctext1", {value : dataname, date : ntime2, name : name, myColor : myColor, fontSize : fontSize, gazou : gazou});
       io.to("room").emit("ctext1", {value : dataname, date : ntime2, name : name, myColor : myColor, fontSize : fontSize});
-      writeLog(name, yaku, day, dayFlg, dataname, dataname)
+      writeLog(name, yaku, day, dayFlg, dataname, pStartDT)
     } else if(yaku === "共有") {
       let serB = searchArray(r, "共有");
       io.to(nameList[0]).emit("ctext1", {value : dataname, date : ntime2, name : name, myColor : myColor, fontSize : fontSize, gazou : gazou});
       io.to(nameList[serB[0] + 1]).emit("ctext1", {value : dataname, date : ntime2, name : name, myColor : myColor, fontSize : fontSize, gazou : gazou});
       io.to(nameList[serB[1] + 1]).emit("ctext1", {value : dataname, date : ntime2, name : name, myColor : myColor, fontSize : fontSize, gazou : gazou});
       io.to("room").emit("ctext1", {value : dataname, date : ntime2, name : name, myColor : myColor, fontSize : fontSize, gazou : gazou});
-      writeLog(name, yaku, day, dayFlg, dataname, dataname)
+      writeLog(name, yaku, day, dayFlg, dataname, pStartDT)
 
     } else if(name !== nameList[0]) {
       //if (name != nameList[0]) {
@@ -379,10 +380,10 @@ socket.on('stext1', (data) => {
       //}
       io.to(name).emit("ctext1", {value : dataname, date : ntime2, name : name, myColor : myColor, fontSize : fontSize, gazou : gazou});
       io.to("room").emit("ctext1", {value : dataname, date : ntime2, name : name, myColor : myColor, fontSize : fontSize, gazou : gazou});
-      writeLog(name, yaku, day, dayFlg, dataname, dataname)
+      writeLog(name, yaku, day, dayFlg, dataname, pStartDT)
     } else {
       io.emit("ctext1", {value : dataname, date : ntime2, name : name, myColor : myColor, fontSize : fontSize, gazou : gazou});
-      writeLog(name, yaku, day, dayFlg, dataname, dataname)
+      writeLog(name, yaku, day, dayFlg, dataname, pStartDT)
     }
   } else if (dayFlg == 4) {
 
@@ -418,6 +419,8 @@ socket.on('stext1', (data) => {
       let uranai = r.indexOf("占い");
       let yakuLi = r.slice();
       let nameLi = nameList.slice(1);
+      let now = new Date();
+      pStartDT = now.toFormat('YYYYMMDDHH24MISS');
 
       if (youko >= 0) {
         yakuLi.splice(uranai, 1);
@@ -725,9 +728,15 @@ socket.on('stext1', (data) => {
 
   socket.on('getLog', (data) => {
     let id = socket.id;
-    day = data.day;
-    zone = data.zone;
-    readLog(day, zone, id);
+    let day = data.day;
+    let zone = data.zone;
+    let timeDate = data.timeDate;
+    readLog(day, zone, timeDate, id);
+  });
+
+  socket.on('getDateTime', () => {
+    let id = socket.id;
+    getDateTime(id);
   });
 
   socket.on('disconnect', () => {
@@ -916,7 +925,7 @@ wri = (name3, pass2, check) => {
     return;
 }
 
-writeLog = (name, yaku, day, zone, chat) => {
+writeLog = (name, yaku, day, zone, chat, dateTime) => {
   MongoClient.connect(uri, {useNewUrlParser: true}, function(err, client) {
     let collection = client.db('jinro').collection('chatLog');
       collection.insertOne({
@@ -924,23 +933,35 @@ writeLog = (name, yaku, day, zone, chat) => {
         "yaku" : yaku,
         "day" : day,
         "zone" : zone, 
-        "chat" : chat
+        "chat" : chat,
+        "dateTime" : dateTime
       });
     client.close();
   });
     return;
 }
 
-readLog = (day, zone, id) => {
-  let check = {"day": day, "zone": zone};
-  MongoClient.connect(uri, {useNewUrlParser: true}, function(err, client) {
+readLog = (day, zone, timeDate, id) => {
+  let check = {"day": day, "zone": zone, "dateTime" : timeDate};
+  MongoClient.connect(uri, {useNewUrlParser: true}, (err, client) => {
     let collection = client.db('jinro').collection('chatLog');
     collection.find(check).toArray((error, documents) => {
       if (error) {
         console.log(error);
       }
-      console.log(documents);
       io.to(id).emit("putLog", {"value" : documents});
+    });
+    client.close();
+  })
+}
+
+getDateTime = (id) => {
+  MongoClient.connect(uri, {useNewUrlParser: true}, function(err, client) {
+    let collection = client.db('jinro').collection('chatLog');
+    collection.distinct('dateTime', (err, documents) => {
+      if(err) {return done(err)};
+
+      io.to(id).emit("putDateTime", {"value" : documents});
     });
     client.close();
   })

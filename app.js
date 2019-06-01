@@ -348,6 +348,7 @@ socket.on('stext1', (data) => {
     if (gameFlg === true) {
       timeList.push([[ntime2], [day]]);
       chatLog.push([[dataname], [name]]);
+      writeLog(name, yaku, day, dayFlg, dataname, dataname)
     }
     io.emit("ctext1", {value : dataname, date : ntime2, name : name, myColor : myColor, fontSize : fontSize, gazou : gazou});
   } else if (dayFlg == 3) {　// 夜
@@ -359,24 +360,27 @@ socket.on('stext1', (data) => {
       io.to(nameList[serA[0] + 1]).emit("ctext1", {value : dataname, date : ntime2, name : name, myColor : myColor, fontSize : fontSize, gazou : gazou});
       io.to(nameList[serA[1] + 1]).emit("ctext1", {value : dataname, date : ntime2, name : name, myColor : myColor, fontSize : fontSize, gazou : gazou});
       io.to("room").emit("ctext1", {value : dataname, date : ntime2, name : name, myColor : myColor, fontSize : fontSize});
-    
+      writeLog(name, yaku, day, dayFlg, dataname, dataname)
     } else if(yaku === "共有") {
       let serB = searchArray(r, "共有");
       io.to(nameList[0]).emit("ctext1", {value : dataname, date : ntime2, name : name, myColor : myColor, fontSize : fontSize, gazou : gazou});
       io.to(nameList[serB[0] + 1]).emit("ctext1", {value : dataname, date : ntime2, name : name, myColor : myColor, fontSize : fontSize, gazou : gazou});
       io.to(nameList[serB[1] + 1]).emit("ctext1", {value : dataname, date : ntime2, name : name, myColor : myColor, fontSize : fontSize, gazou : gazou});
       io.to("room").emit("ctext1", {value : dataname, date : ntime2, name : name, myColor : myColor, fontSize : fontSize, gazou : gazou});
-    
+      writeLog(name, yaku, day, dayFlg, dataname, dataname)
+
     } else if(name !== nameList[0]) {
       //if (name != nameList[0]) {
       io.to(nameList[0]).emit("ctext1", {value : dataname, date : ntime2, name : name, myColor : myColor, fontSize : fontSize, gazou : gazou});
       //}
       io.to(name).emit("ctext1", {value : dataname, date : ntime2, name : name, myColor : myColor, fontSize : fontSize, gazou : gazou});
       io.to("room").emit("ctext1", {value : dataname, date : ntime2, name : name, myColor : myColor, fontSize : fontSize, gazou : gazou});
+      writeLog(name, yaku, day, dayFlg, dataname, dataname)
     } else {
       io.emit("ctext1", {value : dataname, date : ntime2, name : name, myColor : myColor, fontSize : fontSize, gazou : gazou});
+      writeLog(name, yaku, day, dayFlg, dataname, dataname)
     }
-  } else if (dayFlg == 3) {
+  } else if (dayFlg == 4) {
 
 
   } else if (dayFlg == 2) {
@@ -895,6 +899,21 @@ wri = (name3, pass2, check) => {
         "pass" : pass2
       });
     }
+    client.close();
+  });
+    return;
+}
+
+writeLog = (name, yaku, day, zone, chat) => {
+  MongoClient.connect(uri, {useNewUrlParser: true}, function(err, client) {
+    let collection = client.db('jinro').collection('chatLog');
+      collection.insertOne({
+        "name" : name,
+        "yaku" : yaku,
+        "day" : day,
+        "zone" : zone, 
+        "chat" : chat
+      });
     client.close();
   });
     return;

@@ -724,7 +724,11 @@ socket.on("everyone", (data) => {
 });
 
 socket.on("reload", (data) => {
-    location.reload(); /* @@@@@ */
+    if(name == "") {
+        postForm({"name": 'gm', "pass" : 'gm'})
+    } else {
+        postForm({"name": "a", "pass" : "a"})
+    }
 });
 
 socket.on("finish", (data) => {
@@ -955,5 +959,27 @@ let chatWL = (moji, color, moji2, color2) => {
     cell3.style.backgroundImage = 'url(htdocs/magic.png)';
 }
 
+postForm = (value) => {
+ 
+    const form = document.createElement('form');
+    const request = document.createElement('input');
+    const pass = document.createElement('input');
+ 
+    form.method = 'POST';
+    form.action = '/index2';
+ 
+    request.type = 'hidden'; //入力フォームが表示されないように
+    request.name = 'name';
+    request.value = value.name;
 
-
+    pass.type = 'hidden'
+    pass.name = 'pass';
+    pass.value = value.pass;
+ 
+    form.appendChild(request);
+    form.appendChild(pass);
+    document.body.appendChild(form);
+ 
+    form.submit();
+ 
+}

@@ -91,6 +91,11 @@ app.post('/index', (req, res, next) => {
 app.post('/index2', (req, res, next) => {
   
   let name = req.body.name;
+  if(!name) {
+    let aa = JSON.parse(req.body.text);
+    console.dir(aa);
+    console.log(aa.name);
+  }
   let name2 = req.body.name2;
   let name3 = req.body.name3;
   let pass = req.body.pass;
@@ -460,6 +465,7 @@ socket.on('stext1', (data) => {
     vital = [];
     taroinu = [];
     votelist = [];
+    loginFlg = false;
     me = "";
     clearInterval(timer1);
     time = null;

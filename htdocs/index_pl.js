@@ -3,7 +3,7 @@
 window.onload=() => {
     name = document.getElementById("header").innerText;
     gazou = document.getElementById("header2").innerText;
-    socket.emit("touroku", {name : name, people : null, gazou, gazou});
+    socket.emit("touroku", {name : name, people : null, gazou, gazou, color : myColor});
     if (document.cookie.indexOf("taroinu") != -1) {
         console.log(document.cookie);
         socket.emit("id",{value:document.cookie});

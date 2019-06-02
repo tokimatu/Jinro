@@ -10,8 +10,8 @@ let time;
 let timer1;
 let mX;
 let mY;
-let myColor = null;
-
+let myColor = "black";
+let gameFlg = false;
 socket.on("error", (data) => {
     document.cookie = 'taroinu=; max-age=0;';
     alert("名前が重複しているか、７文字以上！");
@@ -77,11 +77,7 @@ socket.on("ctext1", (data) => {
             if (icon) {
                 cell3.style.backgroundImage = "url(" + icon + ")";
             } else {
-                if (colorSet) {
-                    cell3.style.backgroundColor = colorSet;
-                } else {
-                    cell3.style.backgroundColor = "white";
-                }
+                cell3.style.backgroundColor = colorSet;
             }    
         }
     }
@@ -290,14 +286,22 @@ socket.on("target2", (data) => {
 });
 
 socket.on("vote", (data) => {
-    if(name !== "") {
+    if (name !== "GM") {
+        let num = 0;
         let vote = document.getElementById("vote");
-        let nameList = data.value;
+        let name = data.value;
+        let nlist = data.nlist;
+        let glist = data.glist;
+        let clist = data.clist;
         let element_vote = document.createElement("input");
         let label1 = document.createElement("label");
         let label2 = document.createElement("label");
-    
-
+        for (i = 0; i < nlist.length; i++) {
+            if (nlist[i] === name[0]) {
+                num = i; 
+                break;
+            }
+        }
         while (vote.firstChild) {
             vote.removeChild(vote.firstChild);
         }
@@ -306,10 +310,17 @@ socket.on("vote", (data) => {
         element_vote.type = "radio";
         element_vote.id = "vote_radio1";
         element_vote.name = "radio_btn";    
-        element_vote.value = nameList[0];
+        element_vote.value = name[0];
         element_vote.style.display = "none";
-
-        label1.innerHTML = "<div class=label2>" + nameList[0] + "</div>";
+        if (glist[num] === "") {
+            console.log(clist[num]);
+            label1.innerHTML = "<div class=label2><img src=htdocs/no_img.png class=gazou style=background-color:" + clist[num] +
+            ";></img><br>" + name[0] + "</div>";
+        } else {
+            console.log(glist[num]);
+            label1.innerHTML = "<div class=label2><img src=" + glist[num] +
+            " class=gazou></img><br>" + name[0] + "</div>";
+        }
         label1.id = "vote_label1";
         label1.htmlFor = "vote_radio1";
         label1.style.border = "solid"
@@ -317,7 +328,7 @@ socket.on("vote", (data) => {
         label1.style.color = "black";
         label1.style.display = "inline-flex";
         label1.style.width = "70px";
-        label1.style.height = "25px";
+        label1.style.height = "100px";
         label1.style.border = "solid";
         label1.style.borderRadius = "4px";
         label1.style.borderColor = "#73bc69";
@@ -330,20 +341,34 @@ socket.on("vote", (data) => {
         vote.appendChild(label2);
         vote.appendChild(element_vote);
         vote.appendChild(label1);
-        for (i = 1; i < nameList.length; i++) {
+        for (i = 1; i < name.length; i++) {
             let cloneB = vote.childNodes[1].cloneNode(true);
             let cloneR = vote.childNodes[2].cloneNode(true);
-    
+            for (k = 0; k < nlist.length; k++) {
+                if (nlist[k] === name[i]) {
+                    num = k;
+                    //console.log(glist[num]);
+                    break;
+                }
+            }
             vote.appendChild(cloneB);
             vote.appendChild(cloneR);
             let j = 2 * i + 1;
-            vote.childNodes[j].value = nameList[i];
+            vote.childNodes[j].value = name[i];
             vote.childNodes[j].id = "vote_radio" + (i + 1);
-            vote.childNodes[j + 1].innerHTML = "<div class=label2>" + nameList[i] + "</div>";
+
+            if (glist[num] === "") {
+                console.log(clist[num]);
+                vote.childNodes[j + 1].innerHTML = "<div class=label2><img src=htdocs/no_img.png class=gazou style=background-color:" + clist[num] +
+                ";></img><br>" + name[i] + "</div>";
+            } else {
+                vote.childNodes[j + 1].innerHTML = "<div class=label2><img src=" + glist[num] +
+                " class=gazou></img><br>" + name[i] + "</div>";
+            }
             vote.childNodes[j + 1].id = "vote_label" + (i + 1);
             vote.childNodes[j + 1].htmlFor = "vote_radio" + (i + 1);
         }
-        for (i = 0; i < nameList.length; i++) {
+        for (i = 0; i < name.length; i++) {
             let bbb = document.getElementById("vote_label" + (i + 1));
             let ddd = document.getElementsByClassName("label2");
             ddd[i].style.fontSize = "10px";
@@ -693,7 +718,7 @@ socket.on("gameStart", (data) => {
     let dayFlg = data.dayFlg;
     let day = data.day;
     let time = data.time;
-
+    gameFlg = data.game;
     //gameStart1(dayFlg);
     yakuR();
 });
@@ -720,6 +745,7 @@ socket.on("everyone", (data) => {
 });
 
 socket.on("reload", (data) => {
+    gameFlg = false;
     if (name == "GM") {
         postForm({"name": 'gm', "pass" : 'gm'})
     } else {
@@ -931,8 +957,13 @@ let gameStart1 = (dayFlg1) => {
 }
 
 let js_color = (p1) => {
-    myColor = p1;
-    console.log("color:::" + myColor);
+    // ゲーム開始後は色を変えられない
+    if (gameFlg === false) {
+        myColor = p1;
+        console.log("color:::" + myColor);
+        socket.emit("colorset", {name : name, color : myColor});
+        socket.emit("voteReset", {});    
+    }
 }
 
 let chatWL = (moji, color, moji2, color2) => {

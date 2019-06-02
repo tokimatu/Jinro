@@ -28,6 +28,7 @@ let gm3;
 let nameList = [];
 let nameList2 = [];
 let gazouList = [];
+let colorList = [];
 let chatLog = [];
 chatLog[0] = [,];
 let timeList = [];
@@ -144,7 +145,7 @@ app.post('/taroinu', (req, res, next) => {
   if (name != "" && name.length < 7 && loginFlg == true) {
     nameList2.push(name);
     console.log(`${name}さんのパスは${pass}だああああ！`);
-    console.log(`${gazou}！`);
+    //console.log(`${gazou}！`);
     res.render('index', {
       title: name, title2: gazou
     });
@@ -242,6 +243,7 @@ io.sockets.on('connection', (socket) => {
     let name = data.name;
     let people = data.people;
     let gazou = data.gazou;
+    let color = data.color;
     let id = socket.id;
     let ret = nameList.indexOf(name);
     let test_array, test_array2;
@@ -270,6 +272,7 @@ io.sockets.on('connection', (socket) => {
     //console.log(nameList.length);
     nameList.push(name);
     gazouList.push(gazou);
+    colorList.push(color);
     vital.push("(生存中)");
     // GM判断
     if (nameList[0] == name) {
@@ -480,10 +483,10 @@ socket.on('stext1', (data) => {
         }
     //}
     allsurvivor = nameList.slice(1);
-    socket.broadcast.emit("vote", {value : allsurvivor});
+    socket.broadcast.emit("vote", {value : allsurvivor, nlist : nameList, glist : gazouList, clist : colorList});
     //socket.broadcast.emit("ability", {value : gameMode});
     timerC();
-    io.emit("gameStart", {time : time, day : day, dayFlg : dayFlg});  
+    io.emit("gameStart", {time : time, day : day, dayFlg : dayFlg, game : gameFlg});  
   });
 
 
@@ -737,14 +740,18 @@ socket.on('stext1', (data) => {
     socket.leave(data.value);
   });
 
-  socket.on("voteCreate", (data) =>{
+  socket.on("voteCreate", (data) => {
     let id = socket.id;
     let name = data.name;
     for (i = 0; i <  allsurvivor.length; i++) {
       if (allsurvivor[i] === name) {
-        io.to(id).emit("vote", {value : allsurvivor});
+        io.to(id).emit("vote", {value : allsurvivor, nlist : nameList, glist : gazouList, clist : colorList});
       }
     }
+  });
+
+  socket.on("voteReset", () => {
+    io.emit("vote", {value : allsurvivor, nlist : nameList, glist : gazouList, clist : colorList});
   });
 
   socket.on("bResult", () => {
@@ -768,6 +775,18 @@ socket.on('stext1', (data) => {
   socket.on('getDateTime', () => {
     let id = socket.id;
     getDateTime(id);
+  });
+  
+  socket.on("colorset", (data) => {
+    let name = data.name;
+    let color = data.color;
+  
+    for (i = 0; i < nameList.length; i++) {
+      if (name === nameList[i]) {
+        colorList[i] = color;
+        //console.log("color:::" + colorList[i]);
+      }
+    }
   });
 
   socket.on('disconnect', () => {

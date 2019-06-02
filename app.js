@@ -163,6 +163,36 @@ app.post('/gm', (req, res, next) => {
   })
 });
 
+let removeData = () => {
+  MongoClient.connect(uri, {useNewUrlParser: true}, function(err, client) {
+    let collection = client.db('jinro').collection('chatLog');
+    let remove;
+    collection.distinct('dateTime', (err, documents) => {
+      if(err) {return done(err)};
+      
+      if(documents.length > 5) {
+        remove = documents.sort().pop();
+        client.close();
+        return removeDo(remove);
+      } else {
+        client.close();
+      }
+    });
+  });
+}
+
+let removeDo = (remove) => {
+  MongoClient.connect(uri, {useNewUrlParser: true}, function(err, client) {
+    let collection = client.db('jinro').collection('chatLog');
+    collection.remove({"dateTime" : remove}, (err, documents) => {
+      if(err) {return done(err)};
+    });
+    client.close();
+  });
+}
+
+removeData();
+
 /* 開発用 
 //app.get('/taroinu', (req, res, next) => {
   //res.sendFile(path.join(__dirname, './htdocs/index.html'))});

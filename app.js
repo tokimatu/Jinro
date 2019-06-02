@@ -942,7 +942,7 @@ writeLog = (name, yaku, day, zone, chat, dateTime) => {
 }
 
 readLog = (day, zone, timeDate, id) => {
-  let check = {"day": day, "zone": zone, "dateTime" : timeDate};
+  let check = {"day": parseInt(day, 10), "zone": parseInt(zone, 10), "dateTime" : timeDate};
   MongoClient.connect(uri, {useNewUrlParser: true}, (err, client) => {
     let collection = client.db('jinro').collection('chatLog');
     collection.find(check).toArray((error, documents) => {

@@ -171,7 +171,7 @@ let removeData = () => {
       if(err) {return done(err)};
       
       if(documents.length > 5) {
-        remove = documents.sort().pop();
+        remove = documents.sort(compareFunc).pop();
         client.close();
         return removeDo(remove);
       } else {
@@ -451,6 +451,7 @@ socket.on('stext1', (data) => {
       let nameLi = nameList.slice(1);
       let now = new Date();
       pStartDT = now.toFormat('YYYYMMDDHH24MISS');
+      removeData();
 
       if (youko >= 0) {
         yakuLi.splice(uranai, 1);
@@ -995,6 +996,10 @@ getDateTime = (id) => {
     });
     client.close();
   })
+}
+
+let compareFunc = (a, b) => {
+  return b - a;
 }
 
 server.listen(port, () => console.log(`Listening on Port 3000`));

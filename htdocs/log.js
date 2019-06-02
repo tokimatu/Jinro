@@ -32,6 +32,7 @@ socket.on('putLog', (data) => {
 socket.on('putDateTime', (data) => {
     let sele = document.getElementById("dateTime");
     let obj = data.value;
+    obj.sort(compareFunc);
     console.log(obj[0]);
     for(let i in obj) {
         let op = document.createElement("option");
@@ -50,4 +51,8 @@ window.onload=() => {
         console.log(seleZone.value);
         socket.emit('getLog', {"day" : seleDay.value, "zone" : seleZone.value, "timeDate" : seleDatetime.value});
     }
+}
+
+compareFunc = (a, b) => {
+    return b - a;
 }
